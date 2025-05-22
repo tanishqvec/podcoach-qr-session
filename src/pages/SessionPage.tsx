@@ -4,8 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WaveAnimation } from "@/components/WaveAnimation";
 import { Timer } from "@/components/Timer";
-import { Square, Mic, Volume2 } from "lucide-react";
+import { Square, Mic, Volume2, Play, Pause } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { ElevenLabsAPI } from "@/components/ElevenLabsAPI";
+import config from "@/config";
+import { toast } from 'sonner';
 
 const SessionPage = () => {
   const navigate = useNavigate();
@@ -16,6 +19,7 @@ const SessionPage = () => {
   const [visualizationComplexity, setVisualizationComplexity] = useState("medium");
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
+  const [isApiConnected, setIsApiConnected] = useState(false);
   
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -30,7 +34,22 @@ const SessionPage = () => {
   }, [isSessionActive]);
   
   const handleStartSession = () => {
+    if (!config.elevenLabsApiKey) {
+      toast.error("Please add your ElevenLabs API key in the config file");
+      return;
+    }
     setIsSessionActive(true);
+    toast.info("Starting session...");
+  };
+  
+  const handleStopSession = () => {
+    if (isSessionActive) {
+      setIsSessionActive(false);
+      toast.info("Session paused");
+    } else {
+      setIsSessionActive(true);
+      toast.info("Session resumed");
+    }
   };
   
   const handleEndSession = () => {
@@ -70,8 +89,27 @@ const SessionPage = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleApiConnected = () => {
+    setIsApiConnected(true);
+  };
+
+  const handleApiDisconnected = () => {
+    setIsApiConnected(false);
+  };
+
+  const handleSpeakingChange = (isSpeaking: boolean) => {
+    setIsAiSpeaking(isSpeaking);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 p-4">
+      <ElevenLabsAPI 
+        isActive={isSessionActive}
+        agentId={config.elevenLabsAgentId}
+        onConnected={handleApiConnected}
+        onDisconnected={handleApiDisconnected}
+        onSpeakingChange={handleSpeakingChange}
+      />
       <div className="w-full max-w-2xl">
         <Card className="bg-black border-none overflow-hidden">
           <CardContent className="p-0">
@@ -92,7 +130,7 @@ const SessionPage = () => {
             </div>
             
             <div className="p-6 flex flex-col items-center">
-              {!isSessionActive ? (
+              {!isSessionActive && elapsedTime === 0 ? (
                 <div className="text-center py-8">
                   <h1 className="text-3xl font-bold text-primary mb-6">Ready to begin?</h1>
                   <p className="text-white/80 mb-8 max-w-md mx-auto">
@@ -100,6 +138,7 @@ const SessionPage = () => {
                     Your session will last up to 20 minutes.
                   </p>
                   <Button size="lg" onClick={handleStartSession} className="h-14 px-8">
+                    <Play className="mr-2 h-4 w-4" />
                     Start Session
                   </Button>
                 </div>
@@ -108,7 +147,11 @@ const SessionPage = () => {
                   <div className="relative mb-8 w-full max-w-xs">
                     <div className="absolute -inset-8 bg-primary/5 rounded-full blur-xl" />
                     <div className="relative">
-                      <WaveAnimation size="lg" isActive={true} className="mb-4" />
+                      <WaveAnimation 
+                        size="lg" 
+                        isActive={isSessionActive} 
+                        className="mb-4" 
+                      />
                     </div>
                     
                     <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-2">
@@ -123,7 +166,7 @@ const SessionPage = () => {
                   </div>
                   
                   <p className="text-sm text-white/60 mb-2">
-                    PodCoach is listening...
+                    {isAiSpeaking ? "PodCoach is speaking..." : isSessionActive ? "PodCoach is listening..." : "Session paused"}
                   </p>
                   <p className="text-sm text-primary/80 mb-6">
                     Visualization: {visualizationComplexity}
@@ -140,14 +183,33 @@ const SessionPage = () => {
                         </Button>
                       </>
                     ) : (
-                      <Button
-                        variant="outline"
-                        onClick={handleEndSession}
-                        className="text-white/80 border-white/20 hover:bg-white/10 hover:text-white"
-                      >
-                        <Square className="mr-2 h-4 w-4" />
-                        End Session
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={handleStopSession}
+                          className="text-white/80 border-white/20 hover:bg-white/10 hover:text-white"
+                        >
+                          {isSessionActive ? (
+                            <>
+                              <Pause className="mr-2 h-4 w-4" />
+                              Pause Session
+                            </>
+                          ) : (
+                            <>
+                              <Play className="mr-2 h-4 w-4" />
+                              Resume Session
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={handleEndSession}
+                          className="text-white/80 border-white/20 hover:bg-white/10 hover:text-white"
+                        >
+                          <Square className="mr-2 h-4 w-4" />
+                          End Session
+                        </Button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -164,12 +226,14 @@ const SessionPage = () => {
                 ) : (
                   <>
                     <Mic className="h-4 w-4 text-white/40 mr-2" />
-                    <span className="text-sm text-white/40">Waiting to start</span>
+                    <span className="text-sm text-white/40">
+                      {elapsedTime > 0 ? "Session paused" : "Waiting to start"}
+                    </span>
                   </>
                 )}
               </div>
               <span className="text-sm text-white/60">
-                {isSessionActive ? formatTime(elapsedTime) : "00:00"}
+                {elapsedTime > 0 || isSessionActive ? formatTime(elapsedTime) : "00:00"}
               </span>
             </div>
           </CardContent>

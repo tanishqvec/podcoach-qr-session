@@ -101,6 +101,23 @@ const SessionPage = () => {
     setIsAiSpeaking(isSpeaking);
   };
 
+  // Simulate user speaking for demo purposes
+  useEffect(() => {
+    if (isSessionActive && !isAiSpeaking) {
+      // This would be replaced with actual user speech detection
+      const timer = setInterval(() => {
+        // Randomly toggle user speaking state when AI isn't speaking
+        if (Math.random() > 0.7) {
+          setIsUserSpeaking(prev => !prev);
+        }
+      }, 2000);
+      
+      return () => clearInterval(timer);
+    } else {
+      setIsUserSpeaking(false);
+    }
+  }, [isSessionActive, isAiSpeaking]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 p-4">
       <ElevenLabsAPI 
@@ -149,7 +166,9 @@ const SessionPage = () => {
                     <div className="relative">
                       <WaveAnimation 
                         size="lg" 
-                        isActive={isSessionActive} 
+                        isActive={isSessionActive}
+                        isSpeaking={isAiSpeaking || isUserSpeaking}
+                        speakerType={isAiSpeaking ? "ai" : isUserSpeaking ? "user" : "idle"}
                         className="mb-4" 
                       />
                     </div>
@@ -166,7 +185,9 @@ const SessionPage = () => {
                   </div>
                   
                   <p className="text-sm text-white/60 mb-2">
-                    {isAiSpeaking ? "PodCoach is speaking..." : isSessionActive ? "PodCoach is listening..." : "Session paused"}
+                    {isAiSpeaking ? "PodCoach is speaking..." : 
+                     isUserSpeaking ? "You are speaking..." :
+                     isSessionActive ? "PodCoach is listening..." : "Session paused"}
                   </p>
                   <p className="text-sm text-primary/80 mb-6">
                     Visualization: {visualizationComplexity}
@@ -220,8 +241,22 @@ const SessionPage = () => {
               <div className="flex items-center">
                 {isSessionActive ? (
                   <>
-                    <Mic className="h-4 w-4 text-primary mr-2" />
-                    <span className="text-sm text-white/60">Listening to you</span>
+                    {isAiSpeaking ? (
+                      <>
+                        <Volume2 className="h-4 w-4 text-blue-400 mr-2" />
+                        <span className="text-sm text-white/60">PodCoach speaking</span>
+                      </>
+                    ) : isUserSpeaking ? (
+                      <>
+                        <Mic className="h-4 w-4 text-green-400 mr-2" />
+                        <span className="text-sm text-white/60">You're speaking</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4 text-primary mr-2" />
+                        <span className="text-sm text-white/60">Listening to you</span>
+                      </>
+                    )}
                   </>
                 ) : (
                   <>

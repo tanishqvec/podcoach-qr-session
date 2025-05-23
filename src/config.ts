@@ -1,7 +1,7 @@
 
 const config = {
-  elevenLabsApiKey: "sk_af8d4e2633bd0e3c28608655919f1e94baafa9fef7e10ad6",
-  elevenLabsAgentId: "agent_01jvqm3s99ebwts54gvj9a61cd"
+  elevenLabsApiKey: "sk_c4c4e4b23a6654f5aa8592fa22a81d5ccfd36bcabc51d2f3",
+  elevenLabsAgentId: "agent_01jvwkys3ve0cvhaxsr44s3yqc"
 };
 
 export default config;

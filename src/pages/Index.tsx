@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import ScanQRButton from "@/components/ScanQRButton";
 import { QrCode } from "lucide-react";
@@ -8,11 +7,23 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4 text-white">PodCoach QR Scanner</h1>
-        <p className="text-xl text-gray-300">Scan a QR code to start your coaching session</p>
+        <h1 className="text-4xl font-bold mb-4 text-white">AI Calendar</h1>
       </div>
 
       <div className="flex flex-col items-center gap-6">
+        {/* QR Section */}
+        <div className="flex flex-col items-center mb-8">
+          <a href="/session" title="Click to go to session">
+            <img
+              src="/qr.png"
+              alt="Scan this QR to join the session"
+              className="w-40 h-40 rounded-lg border-4 border-white shadow-lg hover:scale-105 transition-transform cursor-pointer"
+            />
+          </a>
+          <div className="text-white/80 text-sm mt-2 text-center max-w-xs">
+            Scan this QR code with your phone, or click it to go directly to the session page.
+          </div>
+        </div>
         <div className="bg-white/10 p-6 rounded-lg backdrop-blur-sm border border-white/10 shadow-xl">
           <h2 className="text-lg font-medium text-white mb-4 text-center">Scan a QR code or start directly</h2>
           
@@ -38,8 +49,6 @@ const Index = () => {
         </div>
         
         <div className="text-gray-400 text-sm max-w-md text-center mt-6 px-4">
-          <p>Point your camera at any QR code to scan it and start your coaching session. 
-          Test QR codes should contain the text "session" to redirect to the session page.</p>
         </div>
       </div>
     </div>

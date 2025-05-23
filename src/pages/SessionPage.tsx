@@ -133,10 +133,8 @@ const SessionPage = () => {
             <div className="p-6 border-b border-surface">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">PodCoach Session</h2>
-                  <p className="text-sm text-white/60">
-                    Guest • Public Speaking
-                  </p>
+                  <h2 className="text-2xl font-bold text-white">Calendar Session</h2>
+
                 </div>
                 <Timer 
                   duration={sessionDuration - elapsedTime} 
@@ -177,7 +175,7 @@ const SessionPage = () => {
                       <button
                         onClick={toggleVisualization}
                         className="text-white/60 hover:text-primary transition-colors p-1 rounded-full"
-                        aria-label="Change visualization complexity"
+
                       >
                         <Volume2 className="h-4 w-4" />
                       </button>
@@ -185,30 +183,27 @@ const SessionPage = () => {
                   </div>
                   
                   <p className="text-sm text-white/60 mb-2">
-                    {isAiSpeaking ? "PodCoach is speaking..." : 
+                    {isAiSpeaking ? "AICal is speaking..." : 
                      isUserSpeaking ? "You are speaking..." :
-                     isSessionActive ? "PodCoach is listening..." : "Session paused"}
+                     isSessionActive ? "AICal is listening..." : "Session paused"}
                   </p>
-                  <p className="text-sm text-primary/80 mb-6">
-                    Visualization: {visualizationComplexity}
-                  </p>
-                  
+        
                   <div className="flex gap-4">
                     {showConfirmEnd ? (
                       <>
                         <Button variant="secondary" onClick={handleCancelEnd}>
                           Continue Session
                         </Button>
-                        <Button variant="destructive" onClick={handleEndSession}>
+                        <Button variant="end" onClick={handleEndSession}>
                           End Session
                         </Button>
                       </>
                     ) : (
                       <>
                         <Button
-                          variant="outline"
+                          variant="pause"
                           onClick={handleStopSession}
-                          className="text-white/80 border-white/20 hover:bg-white/10 hover:text-white"
+                          className="text-black/80 border-white/20 hover:bg-white/10 hover:text-white"
                         >
                           {isSessionActive ? (
                             <>
@@ -225,7 +220,7 @@ const SessionPage = () => {
                         <Button
                           variant="outline"
                           onClick={handleEndSession}
-                          className="text-white/80 border-white/20 hover:bg-white/10 hover:text-white"
+                          className="text-black/80 border-white/20 hover:bg-white/10 hover:text-white"
                         >
                           <Square className="mr-2 h-4 w-4" />
                           End Session
@@ -244,7 +239,7 @@ const SessionPage = () => {
                     {isAiSpeaking ? (
                       <>
                         <Volume2 className="h-4 w-4 text-blue-400 mr-2" />
-                        <span className="text-sm text-white/60">PodCoach speaking</span>
+                        <span className="text-sm text-white/60">AICal speaking</span>
                       </>
                     ) : isUserSpeaking ? (
                       <>
